@@ -28,6 +28,25 @@ namespace ShangZhu
             return response?.Data?.Setting?.Value;
         }
 
+        public T Get<T>(string key)
+        {
+            string value = Get(key);
+
+            if (String.IsNullOrEmpty(value))
+            {
+                return default(T);
+            }
+
+            T typedValue = (T)Convert.ChangeType(value, typeof(T));
+
+            if (typedValue == null)
+            {
+                return default(T);
+            }
+
+            return typedValue;
+        }
+
         private IRestResponse<T> Execute<T>(IRestRequest request) where T : new ()
         {
             request.AddHeader("Authorization", $"Bearer {GetAccessToken()}");
