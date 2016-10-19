@@ -8,5 +8,6 @@ namespace ShangZhu
 {
     public interface IConfigius
     {
+        string Get(string key);
     }
 }
