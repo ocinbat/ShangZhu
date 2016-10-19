@@ -9,7 +9,7 @@ namespace ShangZhu.Tests
         [TestMethod]
         public void Get_Should_Return_Empty()
         {
-            IConfigius configius = ShangZhu.Connect("", "");
+            IConfigius configius = ShangZhu.Connect("1", "asdfasdf");
             string value = configius.Get("test");
         }
     }

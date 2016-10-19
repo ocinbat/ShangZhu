@@ -16,7 +16,7 @@ namespace ShangZhu.Authentication
             _appId = appId;
             _appSecret = appSecret;
             _restClient = new RestClient(Constants.ConfigiusBaseUrl);
-            _restClient.Authenticator = new HttpBasicAuthenticator(appId, appSecret);
+            _restClient.Authenticator = new HttpBasicAuthenticator(Constants.ClientId, Constants.ClientSecret);
         }
 
         public string GetAccessToken()
@@ -26,6 +26,8 @@ namespace ShangZhu.Authentication
             request.AddHeader("Accept", "application/json");
 
             request.AddParameter("grant_type", "client_credentials");
+            request.AddParameter("app_id", _appId);
+            request.AddParameter("app_secret", _appSecret);
 
             IRestResponse<AuthenticationResponse> response = _restClient.Execute<AuthenticationResponse>(request);
 
