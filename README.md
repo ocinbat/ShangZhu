@@ -1,5 +1,7 @@
 ShangZhu
 =
+[![Build status](https://ci.appveyor.com/api/projects/status/qbhgym8bdomfjdmo?svg=true)](https://ci.appveyor.com/project/ocinbat/shangzhu)
+
 .NET client for [Configius](http://www.configius.com/).
 
 Warning!
