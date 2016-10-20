@@ -16,6 +16,5 @@ IConfigius configius = ShangZhu.Connect("appId", "appSecret");
 
 Then you can fetch your settings via ```Get(string key)``` method.
 ```csharp
-IConfigius configius = ShangZhu.Connect("appId", "appSecret");
 string configValue = configius.Get("test-config-key");
 ```
