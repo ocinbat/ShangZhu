@@ -35,6 +35,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
@@ -50,15 +51,17 @@
     <Compile Include="Configius.cs" />
     <Compile Include="Authentication\IAccessTokenProvider.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Dtos\ApplicationSettingDto.cs" />
+    <Compile Include="Dtos\Setting.cs" />
     <Compile Include="IConfigius.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Responses\GetApplicationSettingResponse.cs" />
     <Compile Include="ShangZhu.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="ShangZhu.nuspec" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Responses\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

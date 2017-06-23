@@ -1,16 +1,19 @@
-﻿using RestSharp;
-using RestSharp.Authenticators;
-using ShangZhu.Authentication;
+﻿using ShangZhu.Authentication;
 
 namespace ShangZhu
 {
     public class ShangZhu
     {
-        public static IConfigius Connect(string appId, string appSecret)
+        public static IConfigius Connect(string appId, string appSecret, string environment)
         {
-            IAccessTokenProvider accessTokenProvider = new AccessTokenProvider(appId, appSecret);
+            return Connect(appId, appSecret, environment, Constants.ConfigiusBaseUrl);
+        }
 
-            return new Configius(accessTokenProvider);
+        public static IConfigius Connect(string appId, string appSecret, string environment, string configiusBaseUrl)
+        {
+            IAccessTokenProvider accessTokenProvider = new AccessTokenProvider(configiusBaseUrl, appId, appSecret);
+
+            return new Configius(configiusBaseUrl, accessTokenProvider, appId, environment);
         }
     }
 }

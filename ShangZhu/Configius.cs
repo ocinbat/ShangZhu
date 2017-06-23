@@ -1,31 +1,47 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
 using System.Net;
 using RestSharp;
 using ShangZhu.Authentication;
-using ShangZhu.Responses;
+using ShangZhu.Dtos;
 
 namespace ShangZhu
 {
     internal class Configius : IConfigius
     {
+        private readonly string _appId;
+        private readonly string _environment;
         private readonly IRestClient _restClient;
         private readonly IAccessTokenProvider _accessTokenProvider;
         private string _accessToken;
 
-        public Configius(IAccessTokenProvider accessTokenProvider)
+        public Configius(string baseUrl, IAccessTokenProvider accessTokenProvider, string appId, string environment)
         {
-            _restClient = new RestClient(Constants.ConfigiusBaseUrl);
+            _restClient = new RestClient(baseUrl);
             _accessTokenProvider = accessTokenProvider;
+            _environment = environment;
+            _appId = appId;
         }
 
         public string Get(string key)
         {
-            IRestRequest request = new RestRequest("v1/application-settings/{key}", Method.GET);
-            request.AddParameter("key", key);
+            IRestRequest request = new RestRequest("settings", Method.GET);
+            request.AddQueryParameter("appId", _appId);
+            request.AddQueryParameter("environment", _environment);
+            request.AddQueryParameter("key", key);
 
-            IRestResponse<GetApplicationSettingResponse> response = Execute<GetApplicationSettingResponse>(request);
+            IRestResponse<List<Setting>> response = Execute<List<Setting>>(request);
 
-            return response?.Data?.Setting?.Value;
+            List<Setting> settings = response.Data;
+
+            if (settings == null || !settings.Any())
+            {
+                throw new ConfigurationErrorsException($"ShangZhu cannot find key:{key} for application:{_appId} at environment:{_environment}.");
+            }
+
+            return settings.First().Value;
         }
 
         public T Get<T>(string key)
@@ -60,7 +76,7 @@ namespace ShangZhu
 
                 if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    throw new UnauthorizedAccessException("ShangZhu cannot connect to Configius with given client credentials.");
+                    throw new UnauthorizedAccessException("ShangZhu cannot connect to Configius with given appId and appSecret.");
                 }
             }
 
