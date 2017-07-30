@@ -2,7 +2,7 @@
 
 namespace ShangZhu
 {
-    public class ShangZhu
+    public class Spirit
     {
         public static IConfigius Connect(string appId, string appSecret, string environment)
         {

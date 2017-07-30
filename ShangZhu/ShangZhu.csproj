@@ -54,7 +54,7 @@
     <Compile Include="Dtos\Setting.cs" />
     <Compile Include="IConfigius.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ShangZhu.cs" />
+    <Compile Include="Spirit.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

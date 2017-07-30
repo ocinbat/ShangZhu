@@ -14,7 +14,7 @@ Getting Started
 
 First initialize an ```IConfigius``` instance to talk to the api.
 ```csharp
-IConfigius configius = ShangZhu.Connect("appId", "appSecret");
+IConfigius configius = Spirit.Connect("appId", "appSecret");
 ```
 
 Then you can fetch your settings via ```Get(string key)``` method.
