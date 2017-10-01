@@ -5,6 +5,7 @@ namespace ShangZhu.Tests
     [TestClass]
     public class ConfigiusTests
     {
+        [Ignore]
         [TestMethod]
         public void Get_Should_Return_Empty()
         {
