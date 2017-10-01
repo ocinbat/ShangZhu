@@ -3,13 +3,12 @@
 namespace ShangZhu.Tests
 {
     [TestClass]
-    [Ignore]
     public class ConfigiusTests
     {
         [TestMethod]
         public void Get_Should_Return_Empty()
         {
-            IConfigius configius = Spirit.Connect("168529f4-5b2f-4290-9dd9-e3b2c6f643ad", "asdfasdf", "test", "http://localhost:51311/");
+            IConfigius configius = Spirit.Connect("263a4cf4-b19c-47c7-a6bd-0c52b27641f8", "ZmVkNzk1ZTctMzdmMy00M2I3LWFkNGEtNmM1MTEyZDdiMzY5", "test", "http://localhost:51311/");
             string value = configius.Get("super_config");
         }
     }
