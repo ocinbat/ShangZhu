@@ -6,11 +6,14 @@ using System.Net;
 using RestSharp;
 using ShangZhu.Authentication;
 using ShangZhu.Dtos;
+using ShangZhu.Logging;
 
 namespace ShangZhu
 {
     internal class Configius : IConfigius
     {
+        private static readonly ILog Logger = LogProvider.GetCurrentClassLogger();
+
         private readonly string _appId;
         private readonly string _environment;
         private readonly IRestClient _restClient;
@@ -27,6 +30,7 @@ namespace ShangZhu
 
         public string Get(string key)
         {
+            Logger.Debug($"ShangZhu getting key:{key}.");
             IRestRequest request = new RestRequest("settings", Method.GET);
             request.AddQueryParameter("appId", _appId);
             request.AddQueryParameter("environment", _environment);
@@ -78,6 +82,11 @@ namespace ShangZhu
                 {
                     throw new UnauthorizedAccessException("ShangZhu cannot connect to Configius with given appId and appSecret.");
                 }
+            }
+
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                Logger.Error($"Configius returned an invalid status code:{response.StatusCode}. {response.Content}");
             }
 
             return response;
