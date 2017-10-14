@@ -69,13 +69,14 @@ namespace ShangZhu
 
         private IRestResponse<T> Execute<T>(IRestRequest request) where T : new ()
         {
-            request.AddHeader("Authorization", $"Bearer {GetAccessToken()}");
+            InjectAccessToken(request);
 
             IRestResponse<T> response = _restClient.Execute<T>(request);
 
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                request.AddHeader("Authorization", $"Bearer {GetAccessToken(true)}");
+                RefreshAccessToken();
+                InjectAccessToken(request);
                 response = _restClient.Execute<T>(request);
 
                 if (response.StatusCode == HttpStatusCode.Unauthorized)
@@ -92,14 +93,23 @@ namespace ShangZhu
             return response;
         }
 
-        private string GetAccessToken(bool refresh = false)
+        private void InjectAccessToken(IRestRequest request)
         {
-            if (refresh || String.IsNullOrEmpty(_accessToken))
-            {
-                _accessToken = _accessTokenProvider.GetAccessToken();
-            }
+            Parameter authHeader = request.Parameters.FirstOrDefault(p => p.Type == ParameterType.HttpHeader && p.Name == "Authorization");
 
-            return _accessToken;
+            if (authHeader != null)
+            {
+                authHeader.Value = $"Bearer {_accessToken}";
+            }
+            else
+            {
+                request.AddHeader("Authorization", $"Bearer {_accessToken}");
+            }
+        }
+
+        private void RefreshAccessToken()
+        {
+            _accessToken = _accessTokenProvider.GetAccessToken();
         }
     }
 }
