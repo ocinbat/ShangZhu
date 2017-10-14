@@ -36,15 +36,19 @@ namespace ShangZhu
             request.AddQueryParameter("environment", _environment);
             request.AddQueryParameter("key", key);
 
+            Logger.Debug($"ShangZhu fetching key:{key} from Configius server.");
             IRestResponse<List<Setting>> response = Execute<List<Setting>>(request);
 
+            Logger.Debug($"Getting data from response.");
             List<Setting> settings = response.Data;
 
             if (settings == null || !settings.Any())
             {
+                Logger.Debug($"Response data is null. MEans no key found. Throwing exception.");
                 throw new ConfigurationErrorsException($"ShangZhu cannot find key:{key} for application:{_appId} at environment:{_environment}.");
             }
 
+            Logger.Debug($"Key found. Returning value:{settings.First().Value}");
             return settings.First().Value;
         }
 
@@ -69,25 +73,36 @@ namespace ShangZhu
 
         private IRestResponse<T> Execute<T>(IRestRequest request) where T : new ()
         {
+            if (String.IsNullOrEmpty(_accessToken))
+            {
+                Logger.Debug($"No AccessToken found. Refreshing.");
+                RefreshAccessToken();
+            }
+
+            Logger.Debug($"Injecting access token to request.");
             InjectAccessToken(request);
 
+            Logger.Debug($"Calling server.");
             IRestResponse<T> response = _restClient.Execute<T>(request);
+            Logger.Debug($"Server returned statusCode:{response.StatusCode}");
 
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
+                Logger.Debug($"Unauthorized. Refreshing access token.");
                 RefreshAccessToken();
+
+                Logger.Debug($"Injecting access token to old request.");
                 InjectAccessToken(request);
+
+                Logger.Debug($"Calling for server for key.");
                 response = _restClient.Execute<T>(request);
+                Logger.Debug($"Server returned response:{response.Content} with statusCode:{response.StatusCode} for key.");
 
                 if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
+                    Logger.Debug($"Unauthorized after token refresh. Throwing exception.");
                     throw new UnauthorizedAccessException("ShangZhu cannot connect to Configius with given appId and appSecret.");
                 }
-            }
-
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                Logger.Error($"Configius returned an invalid status code:{response.StatusCode}. {response.Content}");
             }
 
             return response;
@@ -95,14 +110,18 @@ namespace ShangZhu
 
         private void InjectAccessToken(IRestRequest request)
         {
+            Logger.Debug($"Checking if auth header exists.");
             Parameter authHeader = request.Parameters.FirstOrDefault(p => p.Type == ParameterType.HttpHeader && p.Name == "Authorization");
 
             if (authHeader != null)
             {
+                Logger.Debug($"Auth header found. Replacing value.");
                 authHeader.Value = $"Bearer {_accessToken}";
+                Logger.Debug($"New Auth Header Value:{authHeader.Value}");
             }
             else
             {
+                Logger.Debug($"Auth header not found. Creating new.");
                 request.AddHeader("Authorization", $"Bearer {_accessToken}");
             }
         }
